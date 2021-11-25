@@ -1,11 +1,3 @@
-"""
-YOLO 格式的数据集转化为 COCO 格式的数据集
---root_dir 输入根路径
---save_path 保存文件的名字(没有random_split时使用)
---random_split 有则会随机划分数据集，然后再分别保存为3个文件。
---split_by_file 按照 ./train.txt ./val.txt ./test.txt 来对数据集进行划分。
-"""
-
 import os
 import cv2
 import json
@@ -34,18 +26,16 @@ def yolo2coco(arg):
 
     result_to_json = []
     
-    # 标注的id
     ann_id_cnt = 0
     for k, index in enumerate(tqdm(indexes)):
-        # 支持 png jpg 格式的图片。
         txtFile = index.replace('images','txt').replace('.jpg','.txt').replace('.png','.txt')
         index = index.split(".")[0]
-        # 读取图像的宽和高
+
         im = cv2.imread(os.path.join(img_path, (index +'.png')))
         height, width, _ = im.shape
 
         if not os.path.exists(os.path.join(originLabelsDir, txtFile)):
-            # 如没标签，跳过，只保留图片信息。
+
             continue
 
         with open(os.path.join(originLabelsDir, (index +'.txt')), 'r') as fr:
@@ -84,7 +74,6 @@ def yolo2coco(arg):
 
                 ann_id_cnt += 1
 
-    # 保存结果
     folder = os.path.join(save_path, 'annotations')
     if not os.path.exists(folder):
         os.makedirs(folder)
